@@ -26,7 +26,6 @@
       overflow: hidden;
     }
 
-    /* Container for Game */
     #game-container {
       width: 100%;
       max-width: 450px;
@@ -42,7 +41,6 @@
       position: relative;
     }
 
-    /* Header & Dashboard */
     header {
       background: rgba(20, 10, 25, 0.9);
       border: 1px solid #ff572255;
@@ -88,7 +86,6 @@
     }
     .music-btn:active { transform: scale(0.9); }
 
-    /* Goals Panel */
     #goals-bar {
       display: flex;
       gap: 8px;
@@ -112,7 +109,6 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Board Area with 3D Feel */
     #board-wrapper {
       position: relative;
       width: 100%;
@@ -137,7 +133,6 @@
       box-shadow: inset 0 0 20px #000, 0 8px 20px rgba(0,0,0,0.8);
     }
 
-    /* 95% Sized 3D Candy Tiles */
     .cell {
       background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.5));
       border-radius: 10px;
@@ -162,7 +157,6 @@
       box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.5), 0 8px 15px rgba(255, 87, 34, 0.7);
     }
 
-    /* Pop Animation */
     @keyframes candyPop {
       0% { transform: scale(0.95); opacity: 1; filter: brightness(1); }
       40% { transform: scale(1.4); opacity: 0.95; filter: brightness(1.8); }
@@ -173,7 +167,6 @@
       animation: candyPop 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* Particle Sparkles Effect */
     .particle {
       position: absolute;
       width: 7px;
@@ -191,7 +184,6 @@
       100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
     }
 
-    /* Special Candy Badges */
     .special-badge {
       position: absolute;
       bottom: 2px;
@@ -212,7 +204,6 @@
     .cell.bomb { background: radial-gradient(circle at 30% 30%, rgba(255, 0, 100, 0.4), rgba(100, 0, 40, 0.8)); border: 1px solid #ff0055; }
     .cell.wrapped { background: radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.4), rgba(100, 80, 0, 0.8)); border: 1px solid #ffd700; }
 
-    /* Footer Buttons */
     footer {
       display: flex;
       justify-content: space-between;
@@ -246,7 +237,6 @@
       border: 1px solid #ff572244;
     }
 
-    /* Modals & Screens */
     .modal {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -279,7 +269,6 @@
       line-height: 1.4;
     }
 
-    /* Map / Level Selector */
     #level-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -320,13 +309,11 @@
   </style>
 </head>
 <body>
-  <!-- Background Music Audio Element -->
   <audio id="bgMusic" loop>
     <source src="Music.mp3" type="audio/mpeg">
   </audio>
 
   <div id="game-container">
-    <!-- Header Controls -->
     <header>
       <div class="info-box">
         <div class="info-label">Sector</div>
@@ -343,22 +330,18 @@
       <button class="music-btn" id="soundToggle" title="Toggle Background Music">🔊</button>
     </header>
 
-    <!-- Objective Bar -->
     <div id="goals-bar"></div>
 
-    <!-- Main Grid -->
     <div id="board-wrapper">
       <div id="grid"></div>
     </div>
 
-    <!-- Action Buttons -->
     <footer>
       <button class="btn btn-secondary" onclick="openMap()">Sectors</button>
       <button class="btn btn-secondary" onclick="openDailyRewardModal()">Daily Reward</button>
       <button class="btn" onclick="restartLevel()">Restart</button>
     </footer>
 
-    <!-- Level Map Modal -->
     <div id="map-modal" class="modal hidden">
       <div class="modal-title">Mars Mission Map</div>
       <div class="modal-desc">Select an unlocked sector to begin deployment</div>
@@ -366,14 +349,12 @@
       <button class="btn" onclick="closeMap()">Close</button>
     </div>
 
-    <!-- Daily Reward Modal -->
     <div id="daily-modal" class="modal hidden">
       <div class="modal-title">🎁 Daily Colony Reward!</div>
       <div class="modal-desc">Welcome back commander! Collect your daily supply of 50 Coins and +5 Bonus Moves for your Mars expedition.</div>
       <button class="btn" onclick="claimDailyReward()">Claim Reward</button>
     </div>
 
-    <!-- Game Over / Victory Modal -->
     <div id="status-modal" class="modal hidden">
       <div class="modal-title" id="status-title">Sector Cleared!</div>
       <div class="modal-desc" id="status-desc">All mission objectives accomplished.</div>
@@ -382,7 +363,6 @@
   </div>
 
   <script>
-    /* Background Music Integration */
     const bgMusic = document.getElementById('bgMusic');
     bgMusic.volume = 0.5;
     let musicStarted = false;
@@ -408,54 +388,246 @@
       }
       soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
     });
+<body>
+  <audio id="bgMusic" loop>
+    <source src="Music.mp3" type="audio/mpeg">
+  </audio>
 
-    /* Audio Synthesizer for Match / Swap FX */
-    const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    function playSound(type) {
-      if (AudioCtx.state === 'suspended') AudioCtx.resume();
-      const osc = AudioCtx.createOscillator();
-      const gain = AudioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(AudioCtx.destination);
+  <div id="game-container">
+    <header>
+      <div class="info-box">
+        <div class="info-label">Sector</div>
+        <div class="info-value" id="level-display">1</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">Moves</div>
+        <div class="info-value" id="moves-display">25</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">Score</div>
+        <div class="info-value" id="score-display">0</div>
+      </div>
+      <button class="music-btn" id="soundToggle" title="Toggle Background Music">🔊</button>
+    </header>
 
-      const now = AudioCtx.currentTime;
+    <div id="goals-bar"></div>
 
-      if (type === 'swap') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(160, now + 0.08);
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-        osc.start(now);
-        osc.stop(now + 0.08);
-      } else if (type === 'match') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
-        osc.start(now);
-        osc.stop(now + 0.15);
-      } else if (type === 'special') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.linearRampToValueAtTime(660, now + 0.25);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-        osc.start(now);
-        osc.stop(now + 0.25);
-      } else if (type === 'win') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(350, now);
-        osc.frequency.linearRampToValueAtTime(700, now + 0.4);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
-        osc.start(now);
-        osc.stop(now + 0.4);
+    <div id="board-wrapper">
+      <div id="grid"></div>
+    </div>
+
+    <footer>
+      <button class="btn btn-secondary" onclick="openMap()">Sectors</button>
+      <button class="btn btn-secondary" onclick="openDailyRewardModal()">Daily Reward</button>
+      <button class="btn" onclick="restartLevel()">Restart</button>
+    </footer>
+
+    <div id="map-modal" class="modal hidden">
+      <div class="modal-title">Mars Mission Map</div>
+      <div class="modal-desc">Select an unlocked sector to begin deployment</div>
+      <div id="level-grid"></div>
+      <button class="btn" onclick="closeMap()">Close</button>
+    </div>
+
+    <div id="daily-modal" class="modal hidden">
+      <div class="modal-title">🎁 Daily Colony Reward!</div>
+      <div class="modal-desc">Welcome back commander! Collect your daily supply of 50 Coins and +5 Bonus Moves for your Mars expedition.</div>
+      <button class="btn" onclick="claimDailyReward()">Claim Reward</button>
+    </div>
+
+    <div id="status-modal" class="modal hidden">
+      <div class="modal-title" id="status-title">Sector Cleared!</div>
+      <div class="modal-desc" id="status-desc">All mission objectives accomplished.</div>
+      <button class="btn" id="status-btn" onclick="nextOrRetry()">Next Sector</button>
+    </div>
+  </div>
+
+  <script>
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.5;
+    let musicStarted = false;
+    let soundEnabled = true;
+
+    function startMusic() {
+      if (!musicStarted && soundEnabled) {
+        bgMusic.play().catch(e => console.log('Audio error:', e));
+        musicStarted = true;
       }
     }
-    /* Game Configuration & 50 Level Data */
+
+    document.body.addEventListener('click', startMusic, { once: true });
+    document.body.addEventListener('touchstart', startMusic, { once: true });
+
+    const soundToggle = document.getElementById('soundToggle');
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        bgMusic.play();
+      } else {
+        bgMusic.pause();
+      }
+      soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+    });
+<body>
+  <audio id="bgMusic" loop>
+    <source src="Music.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="game-container">
+    <header>
+      <div class="info-box">
+        <div class="info-label">Sector</div>
+        <div class="info-value" id="level-display">1</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">Moves</div>
+        <div class="info-value" id="moves-display">25</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">Score</div>
+        <div class="info-value" id="score-display">0</div>
+      </div>
+      <button class="music-btn" id="soundToggle" title="Toggle Background Music">🔊</button>
+    </header>
+
+    <div id="goals-bar"></div>
+
+    <div id="board-wrapper">
+      <div id="grid"></div>
+    </div>
+
+    <footer>
+      <button class="btn btn-secondary" onclick="openMap()">Sectors</button>
+      <button class="btn btn-secondary" onclick="openDailyRewardModal()">Daily Reward</button>
+      <button class="btn" onclick="restartLevel()">Restart</button>
+    </footer>
+
+    <div id="map-modal" class="modal hidden">
+      <div class="modal-title">Mars Mission Map</div>
+      <div class="modal-desc">Select an unlocked sector to begin deployment</div>
+      <div id="level-grid"></div>
+      <button class="btn" onclick="closeMap()">Close</button>
+    </div>
+
+    <div id="daily-modal" class="modal hidden">
+      <div class="modal-title">🎁 Daily Colony Reward!</div>
+      <div class="modal-desc">Welcome back commander! Collect your daily supply of 50 Coins and +5 Bonus Moves for your Mars expedition.</div>
+      <button class="btn" onclick="claimDailyReward()">Claim Reward</button>
+    </div>
+
+    <div id="status-modal" class="modal hidden">
+      <div class="modal-title" id="status-title">Sector Cleared!</div>
+      <div class="modal-desc" id="status-desc">All mission objectives accomplished.</div>
+      <button class="btn" id="status-btn" onclick="nextOrRetry()">Next Sector</button>
+    </div>
+  </div>
+
+  <script>
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.5;
+    let musicStarted = false;
+    let soundEnabled = true;
+
+    function startMusic() {
+      if (!musicStarted && soundEnabled) {
+        bgMusic.play().catch(e => console.log('Audio error:', e));
+        musicStarted = true;
+      }
+    }
+
+    document.body.addEventListener('click', startMusic, { once: true });
+    document.body.addEventListener('touchstart', startMusic, { once: true });
+
+    const soundToggle = document.getElementById('soundToggle');
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        bgMusic.play();
+      } else {
+        bgMusic.pause();
+      }
+      soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+    });
+<body>
+  <audio id="bgMusic" loop>
+    <source src="Music.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="game-container">
+    <header>
+      <div class="info-box">
+        <div class="info-label">Sector</div>
+        <div class="info-value" id="level-display">1</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">Moves</div>
+        <div class="info-value" id="moves-display">25</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">Score</div>
+        <div class="info-value" id="score-display">0</div>
+      </div>
+      <button class="music-btn" id="soundToggle" title="Toggle Background Music">🔊</button>
+    </header>
+
+    <div id="goals-bar"></div>
+
+    <div id="board-wrapper">
+      <div id="grid"></div>
+    </div>
+
+    <footer>
+      <button class="btn btn-secondary" onclick="openMap()">Sectors</button>
+      <button class="btn btn-secondary" onclick="openDailyRewardModal()">Daily Reward</button>
+      <button class="btn" onclick="restartLevel()">Restart</button>
+    </footer>
+
+    <div id="map-modal" class="modal hidden">
+      <div class="modal-title">Mars Mission Map</div>
+      <div class="modal-desc">Select an unlocked sector to begin deployment</div>
+      <div id="level-grid"></div>
+      <button class="btn" onclick="closeMap()">Close</button>
+    </div>
+
+    <div id="daily-modal" class="modal hidden">
+      <div class="modal-title">🎁 Daily Colony Reward!</div>
+      <div class="modal-desc">Welcome back commander! Collect your daily supply of 50 Coins and +5 Bonus Moves for your Mars expedition.</div>
+      <button class="btn" onclick="claimDailyReward()">Claim Reward</button>
+    </div>
+
+    <div id="status-modal" class="modal hidden">
+      <div class="modal-title" id="status-title">Sector Cleared!</div>
+      <div class="modal-desc" id="status-desc">All mission objectives accomplished.</div>
+      <button class="btn" id="status-btn" onclick="nextOrRetry()">Next Sector</button>
+    </div>
+  </div>
+
+  <script>
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.5;
+    let musicStarted = false;
+    let soundEnabled = true;
+
+    function startMusic() {
+      if (!musicStarted && soundEnabled) {
+        bgMusic.play().catch(e => console.log('Audio error:', e));
+        musicStarted = true;
+      }
+    }
+
+    document.body.addEventListener('click', startMusic, { once: true });
+    document.body.addEventListener('touchstart', startMusic, { once: true });
+
+    const soundToggle = document.getElementById('soundToggle');
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        bgMusic.play();
+      } else {
+        bgMusic.pause();
+      }
+      soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+    });
     const BOARD_SIZE = 8;
     const CANDY_TYPES = [
       { id: 'rover', icon: '🚜' },
@@ -483,7 +655,6 @@
       LEVELS.push({ level: i, moves: moves, goals: goals });
     }
 
-    /* Game State Variables */
     let currentLevelIdx = 0;
     let unlockedLevel = parseInt(localStorage.getItem('mars_unlocked_level') || '1');
     let coins = parseInt(localStorage.getItem('mars_coins') || '100');
@@ -494,7 +665,6 @@
     let currentGoals = {};
     let isProcessing = false;
 
-    /* Check Daily Reward on Boot */
     function checkDailyReward() {
       const lastClaim = localStorage.getItem('mars_last_reward_date');
       const today = new Date().toDateString();
@@ -508,14 +678,12 @@
       localStorage.setItem('mars_coins', coins);
       localStorage.setItem('mars_last_reward_date', new Date().toDateString());
       document.getElementById('daily-modal').classList.add('hidden');
-      playSound('win');
     }
 
     function openDailyRewardModal() {
       document.getElementById('daily-modal').classList.remove('hidden');
     }
 
-    /* Initialize Level */
     function loadLevel(idx) {
       currentLevelIdx = idx;
       const lvl = LEVELS[idx];
@@ -605,7 +773,6 @@
       }
     }
 
-    /* Particle Sparkle Generator */
     function spawnParticles(r, c) {
       const cellEl = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
       if (!cellEl) return;
@@ -635,14 +802,12 @@
       }
     }
 
-    /* Tap-based Selection & Swap Handler */
     function handleCellClick(r, c) {
       if (isProcessing) return;
 
       if (!selectedCell) {
         selectedCell = { r, c };
         document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`).classList.add('selected');
-        playSound('swap');
       } else {
         const prevR = selectedCell.r;
         const prevC = selectedCell.c;
@@ -655,7 +820,6 @@
         } else {
           selectedCell = { r, c };
           document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`).classList.add('selected');
-          playSound('swap');
         }
       }
     }
@@ -664,7 +828,6 @@
       isProcessing = true;
       swapBoardItems(r1, c1, r2, c2);
       renderBoard();
-      playSound('swap');
 
       await new Promise(res => setTimeout(res, 200));
 
@@ -689,7 +852,6 @@
       board[r2][c2] = temp;
     }
 
-    /* Match Detection & Special Candies */
     function findMatches() {
       let matchGroups = [];
 
@@ -738,8 +900,6 @@
         return;
       }
 
-      playSound('match');
-
       for (let group of groups) {
         let specialToSpawn = null;
         let originCell = group[0];
@@ -765,7 +925,6 @@
             type: Math.floor(Math.random() * CANDY_TYPES.length),
             special: specialToSpawn
           };
-          playSound('special');
         }
       }
 
@@ -781,7 +940,6 @@
     }
 
     function triggerRocket(r, c) {
-      playSound('special');
       for (let i = 0; i < BOARD_SIZE; i++) {
         if (board[r][i]) {
           updateGoalCount(CANDY_TYPES[board[r][i].type].id);
@@ -797,7 +955,6 @@
     }
 
     function triggerBomb(r, c) {
-      playSound('special');
       for (let i = Math.max(0, r - 1); i <= Math.min(BOARD_SIZE - 1, r + 1); i++) {
         for (let j = Math.max(0, c - 1); j <= Math.min(BOARD_SIZE - 1, c + 1); j++) {
           if (board[i][j]) {
@@ -832,7 +989,6 @@
       let goalsComplete = Object.values(currentGoals).every(v => v <= 0);
 
       if (goalsComplete) {
-        playSound('win');
         if (currentLevelIdx + 1 >= unlockedLevel) {
           unlockedLevel = Math.min(50, currentLevelIdx + 2);
           localStorage.setItem('mars_unlocked_level', unlockedLevel);
@@ -890,7 +1046,6 @@
       document.getElementById('map-modal').classList.add('hidden');
     }
 
-    // Initialize Game & Daily Reward Check
     checkDailyReward();
     loadLevel(currentLevelIdx);
   </script>
