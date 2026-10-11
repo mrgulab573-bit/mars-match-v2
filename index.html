@@ -361,7 +361,6 @@
       <button class="btn" id="status-btn" onclick="nextOrRetry()">Next Sector</button>
     </div>
   </div>
-
   <script>
     const bgMusic = document.getElementById('bgMusic');
     bgMusic.volume = 0.5;
@@ -388,6 +387,7 @@
       }
       soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
     });
+
     const BOARD_SIZE = 8;
     const CANDY_TYPES = [
       { id: 'rover', icon: '🚜' },
