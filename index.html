@@ -319,8 +319,12 @@
     }
   </style>
 </head>
-  
 <body>
+  <!-- Background Music Audio Element -->
+  <audio id="bgMusic" loop>
+    <source src="Music.mp3" type="audio/mpeg">
+  </audio>
+
   <div id="game-container">
     <!-- Header Controls -->
     <header>
@@ -336,7 +340,7 @@
         <div class="info-label">Score</div>
         <div class="info-value" id="score-display">0</div>
       </div>
-      <button class="music-btn" id="music-toggle-btn" onclick="toggleBgMusic()" title="Toggle Background Music">🎵</button>
+      <button class="music-btn" id="soundToggle" title="Toggle Background Music">🔊</button>
     </header>
 
     <!-- Objective Bar -->
@@ -378,59 +382,36 @@
   </div>
 
   <script>
-    /* Audio Synthesizer & Background Music Engine (Offline Base64 / Web Audio) */
-    const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let bgMusicInterval = null;
-    let bgMusicPlaying = false;
+    /* Background Music Integration */
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.5;
+    let musicStarted = false;
+    let soundEnabled = true;
 
-    function toggleBgMusic() {
-      bgMusicPlaying = !bgMusicPlaying;
-      const btn = document.getElementById('music-toggle-btn');
-      if (bgMusicPlaying) {
-        btn.innerText = '🔊';
-        startBackgroundMusic();
+    function startMusic() {
+      if (!musicStarted && soundEnabled) {
+        bgMusic.play().catch(e => console.log('Audio error:', e));
+        musicStarted = true;
+      }
+    }
+
+    document.body.addEventListener('click', startMusic, { once: true });
+    document.body.addEventListener('touchstart', startMusic, { once: true });
+
+    const soundToggle = document.getElementById('soundToggle');
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        bgMusic.play();
       } else {
-        btn.innerText = '🎵';
-        stopBackgroundMusic();
+        bgMusic.pause();
       }
-    }
+      soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+    });
 
-    function startBackgroundMusic() {
-      if (AudioCtx.state === 'suspended') AudioCtx.resume();
-      if (bgMusicInterval) clearInterval(bgMusicInterval);
-
-      // Procedural ambient space loop
-      const notes = [130.81, 164.81, 196.00, 220.00, 261.63]; // C minor ambient chords
-      let idx = 0;
-
-      bgMusicInterval = setInterval(() => {
-        if (!bgMusicPlaying) return;
-        try {
-          const osc = AudioCtx.createOscillator();
-          const gain = AudioCtx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(notes[idx % notes.length], AudioCtx.currentTime);
-          
-          gain.gain.setValueAtTime(0.05, AudioCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.001, AudioCtx.currentTime + 1.2);
-
-          osc.connect(gain);
-          gain.connect(AudioCtx.destination);
-
-          osc.start();
-          osc.stop(AudioCtx.currentTime + 1.2);
-          idx++;
-        } catch(e) {}
-      }, 1500);
-    }
-
-    function stopBackgroundMusic() {
-      if (bgMusicInterval) {
-        clearInterval(bgMusicInterval);
-        bgMusicInterval = null;
-      }
-    }
-
+    /* Audio Synthesizer for Match / Swap FX */
+    const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
     function playSound(type) {
       if (AudioCtx.state === 'suspended') AudioCtx.resume();
       const osc = AudioCtx.createOscillator();
@@ -474,7 +455,6 @@
         osc.stop(now + 0.4);
       }
     }
-
     /* Game Configuration & 50 Level Data */
     const BOARD_SIZE = 8;
     const CANDY_TYPES = [
@@ -502,7 +482,8 @@
       }
       LEVELS.push({ level: i, moves: moves, goals: goals });
     }
-        /* Game State Variables */
+
+    /* Game State Variables */
     let currentLevelIdx = 0;
     let unlockedLevel = parseInt(localStorage.getItem('mars_unlocked_level') || '1');
     let coins = parseInt(localStorage.getItem('mars_coins') || '100');
