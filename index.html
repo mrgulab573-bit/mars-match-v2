@@ -415,7 +415,7 @@
         </div>
     </div>
 </body>
-<script>
+ <script>
     // Web Audio API Sound Effects
     let audioCtx = null;
     let soundEnabled = true;
@@ -856,11 +856,12 @@
         generate500Levels();
         renderLevelMap();
 
-        // 2-second Splash Screen timer
+        // 2-second Splash Screen timer & revealing level map screen
         setTimeout(() => {
             splashScreen.style.opacity = '0';
             setTimeout(() => {
                 splashScreen.style.display = 'none';
+                levelMapScreen.classList.remove('hidden'); // Show Level Map Screen after splash
             }, 500);
         }, 2000);
 
@@ -871,3 +872,5 @@
         }, { once: true });
     });
 </script>
+
+    
