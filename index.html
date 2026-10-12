@@ -98,7 +98,7 @@
             border: 2px solid #ff5500;
             box-shadow: 0 0 25px rgba(255, 85, 0, 0.6);
             width: 95%;
-            max-width: 450px;
+            max-width: 440px;
             height: 85vh;
             max-height: 600px;
             padding: 20px;
@@ -116,7 +116,7 @@
         }
         .map-header h2 {
             margin: 0;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #00ffff;
             text-shadow: 0 0 8px rgba(0,255,255,0.6);
         }
@@ -158,6 +158,17 @@
         }
         .level-btn:not(.locked):active {
             transform: scale(0.92);
+        }
+        .daily-reward-banner {
+            margin-top: 15px;
+            background: linear-gradient(135deg, #0055ff, #00aaee);
+            border: 1px solid #00ffff;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
         }
 
         /* Game Screen & PRO UI */
@@ -275,7 +286,7 @@
             border: 1px solid #00ffff;
         }
 
-        /* Board Grid & Clean Tiles (No Gray Box, 95% Size) */
+        /* Board Grid & Clean Tiles (Transparent, 95% Size, Contain) */
         .board-wrapper {
             padding: 6px;
             border-radius: 14px;
@@ -348,6 +359,31 @@
             text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
             padding: 0 5px;
         }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: rgba(20, 20, 35, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 0 20px rgba(0,255,255,0.5);
+        }
     </style>
 </head>
 <body>
@@ -370,6 +406,9 @@
         </div>
         <div class="levels-container" id="levelsGrid">
             <!-- Dynamically generated 500 level buttons -->
+        </div>
+        <div class="daily-reward-banner" id="dailyRewardBtn">
+            🎁 Claim Daily Reward (+1 Booster)
         </div>
     </div>
 
@@ -394,11 +433,11 @@
                 <div class="boosters-panel">
                     <button class="booster-btn" id="rocketBooster" title="Rocket Booster">
                         🚀
-                        <span class="booster-count" id="rocketCount">3</span>
+                        <span class="booster-count" id="rocketCount">0</span>
                     </button>
                     <button class="booster-btn" id="bombBooster" title="Bomb Booster">
                         💣
-                        <span class="booster-count" id="bombCount">3</span>
+                        <span class="booster-count" id="bombCount">0</span>
                     </button>
                 </div>
                 
@@ -414,8 +453,16 @@
             </div>
         </div>
     </div>
+    <!-- Daily Reward Modal -->
+    <div id="rewardModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 style="color: #ffaa00; margin-top:0;">Daily Reward Claimed!</h3>
+            <p id="rewardText" style="font-size: 1rem; margin-bottom: 20px;">You received +1 Rocket & +1 Bomb!</p>
+            <button class="btn" id="closeModalBtn" style="width: 100%;">Awesome!</button>
+        </div>
+    </div>
 </body>
- <script>
+<script>
     // Web Audio API Sound Effects
     let audioCtx = null;
     let soundEnabled = true;
@@ -502,6 +549,11 @@
     const rocketCountDisplay = document.getElementById('rocketCount');
     const bombCountDisplay = document.getElementById('bombCount');
 
+    const dailyRewardBtn = document.getElementById('dailyRewardBtn');
+    const rewardModal = document.getElementById('rewardModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const rewardText = document.getElementById('rewardText');
+
     let squares = [];
     let score = 0;
     let moves = 25;
@@ -509,13 +561,14 @@
     let targetScore = 800;
     let maxUnlockedLevel = parseInt(localStorage.getItem('mars_match_max_level')) || 1;
     
+    // Boosters storage (Starts at 0 by default, only incremented via Daily Reward)
+    let rocketCount = parseInt(localStorage.getItem('mars_match_rockets')) || 0;
+    let bombCount = parseInt(localStorage.getItem('mars_match_bombs')) || 0;
+    
     let selectedTile = null;
     let selectedIndex = null;
     let isProcessing = false;
-
     let activeBooster = null;
-    let rocketCount = 3;
-    let bombCount = 3;
 
     // 500 Levels Generator
     let levelsConfig = [];
@@ -550,6 +603,14 @@
             }
             levelsGrid.appendChild(btn);
         }
+        updateBoosterUIStorage();
+    }
+
+    function updateBoosterUIStorage() {
+        rocketCountDisplay.innerText = rocketCount;
+        bombCountDisplay.innerText = bombCount;
+        localStorage.setItem('mars_match_rockets', rocketCount);
+        localStorage.setItem('mars_match_bombs', bombCount);
     }
 
     function loadLevel(lvlNum) {
@@ -563,9 +624,7 @@
         movesDisplay.innerText = moves;
         targetScoreDisplay.innerText = targetScore;
         
-        rocketCount = 3;
-        bombCount = 3;
-        updateBoosterCounts();
+        updateBoosterUIStorage();
         
         levelMapScreen.classList.add('hidden');
         gameScreen.classList.remove('hidden');
@@ -748,25 +807,20 @@
     rocketBoosterBtn.addEventListener('click', () => {
         if (rocketCount <= 0 || isProcessing) return;
         activeBooster = (activeBooster === 'rocket') ? null : 'rocket';
-        updateBoosterUI();
+        updateBoosterHighlight();
         playSound('swap');
     });
 
     bombBoosterBtn.addEventListener('click', () => {
         if (bombCount <= 0 || isProcessing) return;
         activeBooster = (activeBooster === 'bomb') ? null : 'bomb';
-        updateBoosterUI();
+        updateBoosterHighlight();
         playSound('swap');
     });
 
-    function updateBoosterUI() {
+    function updateBoosterHighlight() {
         rocketBoosterBtn.classList.toggle('active', activeBooster === 'rocket');
         bombBoosterBtn.classList.toggle('active', activeBooster === 'bomb');
-    }
-
-    function updateBoosterCounts() {
-        rocketCountDisplay.innerText = rocketCount;
-        bombCountDisplay.innerText = bombCount;
     }
 
     function useBoosterOnTile(idx) {
@@ -798,8 +852,8 @@
         scoreDisplay.innerText = score;
 
         activeBooster = null;
-        updateBoosterUI();
-        updateBoosterCounts();
+        updateBoosterHighlight();
+        updateBoosterUIStorage();
 
         setTimeout(() => {
             moveDown();
@@ -825,6 +879,30 @@
             loadLevel(currentLevel);
         }
     }
+
+    // Daily Reward Logic
+    dailyRewardBtn.addEventListener('click', () => {
+        let lastClaim = localStorage.getItem('mars_match_last_claim');
+        let today = new Date().toDateString();
+
+        if (lastClaim === today) {
+            alert("You have already claimed your daily reward today! Come back tomorrow.");
+            return;
+        }
+
+        localStorage.setItem('mars_match_last_claim', today);
+        rocketCount += 1;
+        bombCount += 1;
+        updateBoosterUIStorage();
+
+        rewardText.innerText = "You received +1 Rocket & +1 Bomb!";
+        rewardModal.classList.remove('hidden');
+        playSound('special');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        rewardModal.classList.add('hidden');
+    });
 
     function toggleSound() {
         soundEnabled = !soundEnabled;
@@ -861,7 +939,7 @@
             splashScreen.style.opacity = '0';
             setTimeout(() => {
                 splashScreen.style.display = 'none';
-                levelMapScreen.classList.remove('hidden'); // Show Level Map Screen after splash
+                levelMapScreen.classList.remove('hidden');
             }, 500);
         }, 2000);
 
@@ -872,5 +950,3 @@
         }, { once: true });
     });
 </script>
-
-    
