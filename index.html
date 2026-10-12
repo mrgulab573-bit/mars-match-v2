@@ -1,7 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mars Match-3 - 500 Levels</title>
+    <title>Mars Match-3 - PRO Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -36,6 +36,59 @@
         .hidden {
             display: none !important;
         }
+
+        /* Splash Screen */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #2a0800, #ff4500, #100000);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .splash-logo {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #ffaa00;
+            text-shadow: 0 0 20px #ff5500, 0 0 40px #ff0000;
+            margin-bottom: 10px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .splash-subtitle {
+            font-size: 1.1rem;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0,255,255,0.8);
+            margin-bottom: 30px;
+        }
+        .loader-bar {
+            width: 200px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loader-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ffff, #ff5500);
+            animation: loadProgress 2s ease forwards;
+        }
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
         /* Level Map Screen */
         #levelMapScreen {
             background: rgba(15, 15, 25, 0.85);
@@ -107,7 +160,7 @@
             transform: scale(0.92);
         }
 
-        /* Game Screen */
+        /* Game Screen & PRO UI */
         .game-container {
             background: rgba(20, 20, 30, 0.8);
             backdrop-filter: blur(12px);
@@ -134,9 +187,10 @@
         .stats-panel {
             display: flex;
             gap: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             padding: 6px 12px;
-            border-radius: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             align-items: center;
             flex-wrap: wrap;
         }
@@ -163,7 +217,7 @@
         /* Main Layout: Boosters on Left, Board on Center */
         .main-layout {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             align-items: center;
             justify-content: center;
@@ -171,19 +225,22 @@
         .boosters-panel {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.3);
+            gap: 12px;
+            background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             padding: 8px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid rgba(0, 255, 255, 0.3);
             align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .booster-btn {
             background: linear-gradient(135deg, #0055ff, #00bbff);
             border: 2px solid #00ffff;
             color: white;
-            width: 45px;
-            height: 45px;
+            width: 44px;
+            height: 44px;
             border-radius: 10px;
             cursor: pointer;
             display: flex;
@@ -215,18 +272,21 @@
             border: 1px solid #00ffff;
         }
 
+        /* Board Grid & Clean Tiles */
         .board-wrapper {
-            padding: 6px;
-            border-radius: 14px;
-            background: rgba(0, 0, 0, 0.4);
-            box-shadow: 0 0 20px #ff5500, inset 0 0 15px #00ffff;
+            padding: 8px;
+            border-radius: 16px;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px #ff5500, inset 0 0 15px #00ffff;
             border: 2px solid #ff5500;
         }
         .grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            gap: 4px;
+            gap: 2px;
             width: 320px;
             height: 320px;
             max-width: 75vw;
@@ -239,42 +299,40 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 4px 8px rgba(0,0,0,0.4);
-            transition: transform 0.2s, background 0.2s;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.25), 0 3px 6px rgba(0,0,0,0.4);
+            transition: transform 0.15s ease, background 0.15s ease;
             position: relative;
         }
         .tile img {
-            width: 92%;
-            height: 92%;
+            width: 94%;
+            height: 94%;
             object-fit: contain;
-            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6));
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));
             pointer-events: none;
-            transition: transform 0.2s;
+            transition: transform 0.15s ease;
         }
         .tile.selected {
-            transform: scale(1.08);
-            background: rgba(0, 255, 255, 0.3);
+            transform: scale(1.1);
+            background: rgba(0, 255, 255, 0.25);
             box-shadow: 0 0 15px #00ffff, inset 0 0 8px rgba(255,255,255,0.8);
             z-index: 2;
         }
         .tile.special-rocket::after {
             content: '🚀';
             position: absolute;
-            font-size: 12px;
-            bottom: 2px;
-            right: 2px;
+            font-size: 11px;
+            bottom: 1px;
+            right: 1px;
             filter: drop-shadow(0 1px 2px #000);
         }
         .tile.special-bomb::after {
             content: '💣';
             position: absolute;
-            font-size: 12px;
-            bottom: 2px;
-            right: 2px;
+            font-size: 11px;
+            bottom: 1px;
+            right: 1px;
             filter: drop-shadow(0 1px 2px #000);
         }
         .level-info-bar {
@@ -292,8 +350,17 @@
 <body>
     <audio id="bgMusic" src="Music.mp3" loop></audio>
     
+    <!-- Splash Screen -->
+    <div id="splashScreen">
+        <div class="splash-logo">MARS MATCH 3</div>
+        <div class="splash-subtitle">Exploring Red Planet Puzzles</div>
+        <div class="loader-bar">
+            <div class="loader-fill"></div>
+        </div>
+    </div>
+
     <!-- Level Map Screen (500 Levels) -->
-    <div id="levelMapScreen" class="screen">
+    <div id="levelMapScreen" class="screen hidden">
         <div class="map-header">
             <h2>Mars Sectors (500 Levels)</h2>
             <button class="btn" id="soundToggleMap">🔊</button>
@@ -418,6 +485,7 @@
     const targetScoreDisplay = document.getElementById('targetScore');
     const levelsGrid = document.getElementById('levelsGrid');
     
+    const splashScreen = document.getElementById('splashScreen');
     const levelMapScreen = document.getElementById('levelMapScreen');
     const gameScreen = document.getElementById('gameScreen');
 
@@ -442,20 +510,17 @@
     let selectedIndex = null;
     let isProcessing = false;
 
-    let activeBooster = null; // 'rocket' or 'bomb'
+    let activeBooster = null;
     let rocketCount = 3;
     let bombCount = 3;
 
-    // Task 3: 500 Levels Generator
+    // 500 Levels Generator
     let levelsConfig = [];
     function generate500Levels() {
         levelsConfig = [];
         for (let i = 1; i <= 500; i++) {
-            // Difficulty scaling: moves decrease from 25 down to 12
             let lvlMoves = Math.max(12, Math.floor(25 - (i - 1) * 13 / 499));
-            // Target score increases progressively
             let lvlTarget = 800 + (i - 1) * 150;
-            // Tile types available increase or remain all 6
             let activeTypes = Math.min(6, 4 + Math.floor(i / 150));
             
             levelsConfig.push({
@@ -537,7 +602,6 @@
         initAudioContext();
         const clickedIndex = parseInt(this.getAttribute('data-id'));
 
-        // Handle Active Booster
         if (activeBooster) {
             useBoosterOnTile(clickedIndex);
             return;
@@ -590,7 +654,6 @@
     function checkValidMatches() {
         let matchedIndices = [];
 
-        // Check rows
         for (let r = 0; r < width; r++) {
             for (let c = 0; c < width - 2; c++) {
                 let idx = r * width + c;
@@ -601,7 +664,6 @@
             }
         }
 
-        // Check columns
         for (let c = 0; c < width; c++) {
             for (let r = 0; r < width - 2; r++) {
                 let idx = r * width + c;
@@ -680,7 +742,6 @@
         }
     }
 
-    // Boosters functionality
     rocketBoosterBtn.addEventListener('click', () => {
         if (rocketCount <= 0 || isProcessing) return;
         activeBooster = (activeBooster === 'rocket') ? null : 'rocket';
@@ -714,13 +775,11 @@
 
         if (activeBooster === 'rocket') {
             rocketCount--;
-            // Clear entire row
             for (let c = 0; c < width; c++) {
                 cleared.push(row * width + c);
             }
         } else if (activeBooster === 'bomb') {
             bombCount--;
-            // Clear 3x3 area
             for (let r = Math.max(0, row - 1); r <= Math.min(width - 1, row + 1); r++) {
                 for (let c = Math.max(0, col - 1); c <= Math.min(width - 1, col + 1); c++) {
                     cleared.push(r * width + c);
@@ -764,7 +823,6 @@
         }
     }
 
-    // Toggle Sound & Music
     function toggleSound() {
         soundEnabled = !soundEnabled;
         const icon = soundEnabled ? '🔊' : '🔇';
@@ -791,10 +849,17 @@
         loadLevel(currentLevel);
     });
 
-    // Initial Setup
     window.addEventListener('DOMContentLoaded', () => {
         generate500Levels();
         renderLevelMap();
+
+        // 2-second Splash Screen timer
+        setTimeout(() => {
+            splashScreen.style.opacity = '0';
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 500);
+        }, 2000);
 
         document.body.addEventListener('click', () => {
             if (soundEnabled && bgMusic.paused) {
