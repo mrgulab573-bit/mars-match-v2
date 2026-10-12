@@ -44,7 +44,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(135deg, #2a0800, #ff4500, #100000);
+            background: linear-gradient(135deg, #1a0500, #ff4500, #0a0000);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -162,7 +162,7 @@
 
         /* Game Screen & PRO UI */
         .game-container {
-            background: rgba(20, 20, 30, 0.8);
+            background: rgba(15, 15, 25, 0.75);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
@@ -172,6 +172,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
+            max-width: 420px;
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
         .header {
@@ -187,10 +188,12 @@
         .stats-panel {
             display: flex;
             gap: 10px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 6px 12px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             align-items: center;
             flex-wrap: wrap;
         }
@@ -214,10 +217,10 @@
             transform: scale(0.95);
         }
         
-        /* Main Layout: Boosters on Left, Board on Center */
+        /* Main Layout: Boosters & Board Aligned Cleanly */
         .main-layout {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             align-items: center;
             justify-content: center;
@@ -225,30 +228,30 @@
         .boosters-panel {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            background: rgba(20, 20, 30, 0.6);
+            gap: 10px;
+            background: rgba(10, 10, 15, 0.5);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            padding: 8px;
-            border-radius: 14px;
+            padding: 6px;
+            border-radius: 12px;
             border: 1px solid rgba(0, 255, 255, 0.3);
             align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
         .booster-btn {
             background: linear-gradient(135deg, #0055ff, #00bbff);
             border: 2px solid #00ffff;
             color: white;
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+            font-size: 1.1rem;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
             position: relative;
             transition: transform 0.1s;
         }
@@ -257,7 +260,7 @@
         }
         .booster-btn.active {
             border-color: #ff5500;
-            box-shadow: 0 0 15px #ff5500;
+            box-shadow: 0 0 12px #ff5500;
             background: linear-gradient(135deg, #ff5500, #ffaa00);
         }
         .booster-count {
@@ -266,20 +269,20 @@
             right: -4px;
             background: #111;
             color: #00ffff;
-            font-size: 0.65rem;
-            padding: 1px 4px;
-            border-radius: 6px;
+            font-size: 0.6rem;
+            padding: 1px 3px;
+            border-radius: 5px;
             border: 1px solid #00ffff;
         }
 
-        /* Board Grid & Clean Tiles */
+        /* Board Grid & Clean Tiles (No Gray Box, 95% Size) */
         .board-wrapper {
-            padding: 8px;
-            border-radius: 16px;
-            background: rgba(10, 10, 15, 0.6);
+            padding: 6px;
+            border-radius: 14px;
+            background: rgba(10, 10, 15, 0.5);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 0 25px #ff5500, inset 0 0 15px #00ffff;
+            box-shadow: 0 0 20px rgba(255, 85, 0, 0.8), inset 0 0 10px rgba(0, 255, 255, 0.5);
             border: 2px solid #ff5500;
         }
         .grid {
@@ -287,10 +290,10 @@
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
             gap: 2px;
-            width: 320px;
-            height: 320px;
-            max-width: 75vw;
-            max-height: 75vw;
+            width: 300px;
+            height: 300px;
+            max-width: 72vw;
+            max-height: 72vw;
         }
         .tile {
             width: 100%;
@@ -299,30 +302,30 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: inset 0 1px 3px rgba(255,255,255,0.25), 0 3px 6px rgba(0,0,0,0.4);
+            border-radius: 12px;
+            background: transparent;
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.2), 0 2px 5px rgba(0,0,0,0.4);
             transition: transform 0.15s ease, background 0.15s ease;
             position: relative;
         }
         .tile img {
-            width: 94%;
-            height: 94%;
+            width: 95%;
+            height: 95%;
             object-fit: contain;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
             pointer-events: none;
             transition: transform 0.15s ease;
         }
         .tile.selected {
             transform: scale(1.1);
-            background: rgba(0, 255, 255, 0.25);
-            box-shadow: 0 0 15px #00ffff, inset 0 0 8px rgba(255,255,255,0.8);
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 12px #00ffff, inset 0 0 6px rgba(255,255,255,0.8);
             z-index: 2;
         }
         .tile.special-rocket::after {
             content: '🚀';
             position: absolute;
-            font-size: 11px;
+            font-size: 10px;
             bottom: 1px;
             right: 1px;
             filter: drop-shadow(0 1px 2px #000);
@@ -330,13 +333,13 @@
         .tile.special-bomb::after {
             content: '💣';
             position: absolute;
-            font-size: 11px;
+            font-size: 10px;
             bottom: 1px;
             right: 1px;
             filter: drop-shadow(0 1px 2px #000);
         }
         .level-info-bar {
-            margin-top: 12px;
+            margin-top: 10px;
             display: flex;
             justify-content: space-between;
             width: 100%;
